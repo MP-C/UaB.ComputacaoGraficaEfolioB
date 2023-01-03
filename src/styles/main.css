@@ -1,0 +1,64 @@
+/*==========================================================================
+// Nome         : Mário Pedro Carvalho
+// Número aluno : 2000563
+// Curso        : Licenciatura em Engenharia Informática
+// Ficheiro     : main.css
+// Descrição    : E FOLIO B - Computação Gráfica - documento css que
+//                permite controlar a apresentação de cada componente
+// Codigo       : Este código ficará publicamente disponivel no repositório
+//                GitHub https://github.com/MP-C/UaB.ComputacaoGraficaEfolioB
+//                após o dia 9 de Janeiro de 2023
+//==========================================================================
+*/
+
+body {
+  /* Para evitar que os comandos Scroll apareçam e permitir que o "espaço" em que se apresenta o tabuleiro esteja fixo */
+  margin: 0;
+  overflow: hidden;
+
+  /* Para definir estilos de letras */
+  text-align: center;
+  font-size: 12px;
+  font-family: Sans-Serif;
+
+  /* Para definir a cor do texto */
+  color: black;
+
+  /* Para determinar a cor de base do background do container apresentação */
+  background-color: #d3d3d3;
+}
+
+.apresentation {
+  /* Para ter a posição defenida para o título do projeto no espaço central - identificação */
+  display:flex;
+  justify-content: space-around;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+}
+
+#scene-container {
+  /* Para determinar no container o espaço necessário que se ocupa na página completa */
+  position: absolute;
+  margin-top: 50px ;
+  width: 100%;
+  height: 100%;
+
+  /* Para determinar a cor de base do background do container em que se encontra a "scene" e evitar flas enquanto carrega o programa */
+  background-color: #d3d3d3;
+}
+
+.controls{
+  position: fixed;
+  display: block;
+  background-color: transparent;
+  pointer-events: none;
+  text-align: left;
+  bottom:0;
+  left:0;
+  padding: 10px;
+  color: rgba(5, 4, 4);
+  animation-name: fadeIn;
+  animation-duration: 0.8s;
+  font-size: 16px;
+}

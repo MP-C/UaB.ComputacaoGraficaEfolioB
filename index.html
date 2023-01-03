@@ -1,0 +1,62 @@
+<!--
+//============================================================================
+// Nome         : Mário Pedro Carvalho
+// Número aluno : 2000563
+// Curso        : Licenciatura em Engenharia Informática
+// Ficheiro     : index.html
+// Descrição    : E FOLIO B - Computação Gráfica - documento web que 
+//                reune os diferentes ficheiros segundo critérios de
+//                avaliação do EFólio
+// Codigo       : Este código ficará publicamente disponivel no repositório
+//                GitHub https://github.com/MP-C/UaB.ComputacaoGraficaEfolioB
+//                após o dia 9 de Janeiro de 2023
+//============================================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <title>EFolio B - CG - Mário Carvalho</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8" />
+    <link href="./src/styles/main.css" rel="stylesheet" type="text/css">
+    <script type="module" src="./src/main.js"></script>
+</head>
+
+<body>
+    <div class="apresentation">
+        <h2> Mário Carvalho, 2000563 </h2>
+        <h1> EFólio B - Computação Gráfica </h1>
+        <h2> Projeto : Bezier 4 </h2>
+    </div>
+        <!-- Para efeitos de testes, consultar "./src/test/testeLineMP.mjs" e implementar aqui a linha correspondente, para se realizarem testes de pontos intermédios com o ficheiro lineMP.js -->
+    <div id="scene-container">
+        <!-- Zona que fica utilizável para que a implementação funcione -->
+    </div>
+    <div class="controls">
+        <h3><h2>Controlos:</h2>
+            'backpace' - pressionar a tecla para reiniciar o algoritmo <br>
+            'botão direito do rato' - movimentar o plano nos 3 eixos <br>
+            'botão esquerdo do rato' - rodar o plano em torno da origem <br>
+            'scroll do rato cima/baixo' - Zoom In/Out<br>
+            <h2>Instruções de Utilização:</h2>
+
+            Selecionar a bola pretendida pressionando a tecla respetiva:<br>
+            &emsp;'1' - Seleciona a bola 1 (C0 - amarela)<br>
+            &emsp;'2' - Seleciona a bola 2 (C1 - vermelha)<br>
+            &emsp;'3' - Seleciona a bola 3 (C2 - verde)<br>
+            &emsp;'4' - Seleciona a bola 3 (C3 - azul)<br><br>
+            Após a seleção da bola, escolher as novas coordenadas da bola:<br>
+            &emsp;'movimento do rato' posicionar com o ponteiro do rato nas coordenadas x,y pretendidadas<br>
+            &emsp;'w' - Aumenta a coordenada Z em 0.1 (manter pressionado acelera o processo) <br>
+            &emsp;'s' - Diminui a coordenada Z em 0.1 (manter pressionado acelera o processo) <br><br>
+            Quando o ponto selecionado estiver nas coordenadas pretendidas:<br>
+            &emsp;'space' - Grava a nova posição da bola<br><br>
+            Após todos os pontos estarem colocados nas coordenadas pretendidas<br>
+            &emsp;'x' - desenha a curva bezier cubica em função dos pontos C0,C1,C2,C3<br><br>
+
+            
+        </h3>
+    </div>
+</body>
+
+</html>
