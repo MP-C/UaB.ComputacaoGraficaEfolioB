@@ -19,7 +19,7 @@ import * as THREE from 'https://unpkg.com/three@0.124.0/build/three.module.js';
 function createScene() {
   const scene = new THREE.Scene();
 
-  scene.background = new THREE.Color('#d3d3d3');
+  scene.background = new THREE.Color('#b3b3b3');
 
   return scene;
 }

@@ -23,7 +23,7 @@ function createPixel(size, x, y, color) {
   const material = new THREE.MeshBasicMaterial({
     color: color,
     side: THREE.DoubleSide,
-    opacity: 0.77,
+    opacity: 0.60,
     transparent: true
   });
 
@@ -32,8 +32,9 @@ function createPixel(size, x, y, color) {
 
   /* Para atulizar a nova posição de cada pixel, quando este for criado para o tabuleiro,
    segundo o seu tamanho importado de "displayRaster.js" */
-  pixel.position.x = size * x;
-  pixel.position.y = size * y;
+  pixel.position.x = x + 0.5;
+  pixel.position.y = y + 0.5;
+  pixel.position.z = 0;
 
   return pixel;
 }

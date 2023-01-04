@@ -32,7 +32,6 @@ let camera;
 let scene;
 let renderer;
 let controls;
-// let axes;
 
 /* Para construir um conteúdo único para os objeto criado */
 class World {
@@ -48,10 +47,7 @@ class World {
     
     /* Para atualizar o container do index.html em main.js a partir da nova função criada em world */
     container.append(renderer.domElement);
-
-    // axes.position.z=0.05
-    // scene.add(axes);
-
+    
     /* Para redemensionar cada função a cada momento que ocora alteração do global */
     const resizer = new Resizer(container, camera, renderer);
   }
