@@ -103,28 +103,29 @@ function createBoard() {
 }
 
 
-//Função que cria uma bola 
+/* Função que cria uma bola à vez*/ 
 function createSphere (C){
-    const geometry = new THREE.SphereGeometry( 0.5, 25, 25 );               // Para criar uma esfera de raio 0.5, e com 32 segmentos horizontais e verticais
-    const material = new THREE.MeshBasicMaterial( { color: C.color,         // material com a cor relativa a bola selecionada
-                                                    opacity: 0.5,           // semi-opaca
-                                                    transparent: true } );  // transparente
-    const sphere = new THREE.Mesh( geometry, material );                    // cria o material
-    // coloca a bola na respetiva posição
+    const geometry = new THREE.SphereGeometry( 0.5, 25, 25 );               /* Para criar uma esfera de raio 0.5, e com detalhe de 25 segmentos horizontais e 25 verticais */
+    const material = new THREE.MeshBasicMaterial( { color: C.color,         /* Para que o material fique com a cor pedida quando a bola é selecionada */
+                                                    opacity: 0.5,           /* Para ser semi-opaca */
+                                                    transparent: true } );  /* para ficar transparente */
+    const sphere = new THREE.Mesh( geometry, material );                    /* Para criar o material da esfera e a tornar visível */
+    /* Para colocar a bola posição randomizada */
     sphere.position.x=C.position.x;                                         
     sphere.position.y=C.position.y;
     sphere.position.z=C.position.z;
 
-    let sp = sphere.userData;                   // Userdata para controlo
-    sp.startPosition = new THREE.Vector3();     // posição inicial
-    sp.lastPosition = new THREE.Vector3();      // ultima posição gravada
-    sp.startPosition = C.startPosition;         // inicialização da posição inicial
-    sp.lastPosition = C.startPosition;          // inicialização da ultima posição (inicial)
-        
-    return sphere;                              // retorna a esfera
+    let sphereDetails = sphere.userData;                   /* Userdata para controlo */
+    sphereDetails.startPosition = new THREE.Vector3();     /* posição inicial */
+    sphereDetails.lastPosition = new THREE.Vector3();      /* ultima posição gravada */
+    sphereDetails.startPosition = C.startPosition;         /* inicialização da posição inicial */
+    sphereDetails.lastPosition = C.startPosition;          /* inicialização da ultima posição (inicial) */
+
+    return sphere;                                         /* Devolve a esfera para a função seguinte */
 }
 
-/* Para que criar cada bola, e estas serem inseridas no tabuleiro numa posição inicial, com as cores respetivas, a partir do array correspondente */
+/* Para que criar as bolas todas, e estas serem inseridas no tabuleiro numa posição inicial aletóriaa, 
+com as cores respetivas, a partir do array correspondente */
 function createBalls() {
     balls.push(createSphere(C0));
     balls.push(createSphere(C1));
