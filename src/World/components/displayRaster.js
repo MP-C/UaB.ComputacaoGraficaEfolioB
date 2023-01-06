@@ -29,14 +29,12 @@ const colorOdd = '#8e89b4';             /* Para defenir a cor quando o resultado
 let camera, renderer, scene, controls;  /* Para importar as funcionalidades existentes */
 let boards = [];                        /* Para criar o tabuleiro */
 
-/* Variáveis para apresentar as bolas no tabuleiro consoante a interação do utilizador */
+/* Variáveis para apresentar as bolas e pontos no tabuleiro consoante a interação do utilizador */
 let balls = []; /* Para guardar as bolas selecionadas */
-
-/* Variáveis para apresentar pontos no tabuleiro consoante a interação do utilizador */
 let mouse = new THREE.Vector2(0, 0);     /* Para identificar a posição do rato no tabuleiro */
+let raycaster = new THREE.Raycaster();   /* Funcionalidade exigida para apresentar as coordenadas (x,y,z) em que a bola se encontra sobre o tabuleiro */
 
 //////////////////////////////////////////////////////////
-let raycaster = new THREE.Raycaster();   /* Funcionalidade exigida para apresentar as coordenadas (x,y,z) em que a bola se encontra sobre o tabuleiro */
 let tilePointsRed = [];                  /* Para utilizar os pontos criam os ladrilhos vermelhos do raycaster */
 let selectedPointsMP = [];               /* Para utilizar os pontos criam a linha do lineMP */
 //////////////////////////////////////////////////////////
@@ -104,99 +102,119 @@ function createBoard() {
 
 
 /* Função que cria uma bola à vez*/ 
-function createSphere (C){
+function createSphere (ballC){
     const geometry = new THREE.SphereGeometry( 0.5, 25, 25 );               /* Para criar uma esfera de raio 0.5, e com detalhe de 25 segmentos horizontais e 25 verticais */
-    const material = new THREE.MeshBasicMaterial( { color: C.color,         /* Para que o material fique com a cor pedida quando a bola é selecionada */
+    const material = new THREE.MeshBasicMaterial( { color: ballC.color,         /* Para que o material fique com a cor pedida quando a bola é selecionada */
                                                     opacity: 0.5,           /* Para ser semi-opaca */
                                                     transparent: true } );  /* para ficar transparente */
     const sphere = new THREE.Mesh( geometry, material );                    /* Para criar o material da esfera e a tornar visível */
     /* Para colocar a bola posição randomizada */
-    sphere.position.x=C.position.x;                                         
-    sphere.position.y=C.position.y;
-    sphere.position.z=C.position.z;
+    sphere.position.x = ballC.position.x;                                         
+    sphere.position.y = ballC.position.y;
+    sphere.position.z = ballC.position.z;
 
-    let sphereDetails = sphere.userData;                   /* Userdata para controlo */
-    sphereDetails.startPosition = new THREE.Vector3();     /* posição inicial */
-    sphereDetails.lastPosition = new THREE.Vector3();      /* ultima posição gravada */
-    sphereDetails.startPosition = C.startPosition;         /* inicialização da posição inicial */
-    sphereDetails.lastPosition = C.startPosition;          /* inicialização da ultima posição (inicial) */
+    let sphereDetails = sphere.userData;                   /* Para controlo com a Userdata */
+    sphereDetails.startPosition = new THREE.Vector3();     /* Para determinar a posição inicial */
+    sphereDetails.lastPosition = new THREE.Vector3();      /* e a última posição gravada */
+    sphereDetails.startPosition = ballC.startPosition;     /* Para determinar a inicialização da posição inicial */
+    sphereDetails.lastPosition = ballC.startPosition;      /* inicialização da ultima posição (inicial) */
 
     return sphere;                                         /* Devolve a esfera para a função seguinte */
 }
 
-/* Para que criar as bolas todas, e estas serem inseridas no tabuleiro numa posição inicial aletóriaa, 
-com as cores respetivas, a partir do array correspondente */
+/* Função que cria as bolas todas, e faz com que estas sejam inseridas no tabuleiro numa posição inicial
+aletóriaa, com as cores respetivas, a partir do array correspondente */
 function createBalls() {
-    balls.push(createSphere(C0));
-    balls.push(createSphere(C1));
-    balls.push(createSphere(C2));
-    balls.push(createSphere(C3));
-    balls.push(createSphere(C4));
+    balls.push(createSphere(C0));  /* Para criar a bola amarela */
+    balls.push(createSphere(C1));  /* Para criar a bola laranja */
+    balls.push(createSphere(C2));  /* Para criar a bola vermelha */
+    balls.push(createSphere(C3));  /* Para criar a bola verde */
+    balls.push(createSphere(C4));  /* Para criar a bola azul */
 
     balls.every (sphere => scene.add(sphere));    /* Para inserir as bolas na scene */
 }
 
 /* Função que recebe um número e seleciona a bola que corresponde a esse numero */ 
 function ballSelected(i) {
-    selectBall.selected = true;              /* bola foi selecionada */
-    selectBall.ball = i;                     /* entra o número da bola seleccionada */
-    balls[i].material.transparent = false;   /* tira a transparencia a bola selecionada */
-    showCoordenates(balls[i]);               /* Liga o DIV com as coordenadas da bola em tempo real */
-}
-
-/* Função que Grava as coordenadas da bola selecionada e tira a seleção de bola */
-function ballDeselected() {
-    let C = balls[selectBall.ball];                         /* Coloca a bola selecionada em C */
-    let newXY = new THREE.Vector3();                        /* cria um vector2 para receber as coordenadas da interceção do rato com o tabuleiro */
-    raycaster.setFromCamera(mouse, camera);                 /* inicializa o raycaster com as posições do rato em relação á camara */
-    const intersects = raycaster.intersectObjects(pixels);  /* coloca os objetos existentes no array pixels que são intercetados pelo ray no array intersects */
-    /*console.log(intersects); */
-    if (intersects.length > 0) {                            /* Se existir alguma interseção coloca a bola na nova posição */
-        newXY = intersects[0].point;                        /* coloca as coordenadas x,y do ponto da interseção em newXY */ 
-        C.position.x = newXY.x;                             /* atualiza o novo x de C */
-        C.position.y = newXY.y;                             /* atualiza o novo y de C */
-        /* Este parametro serve para quando se tira a seleção da bola ficarmos com a posição gravada */
-        C.userData.lastPosition.x = C.position.x;           /* atualiza o ultimo x de C */
-        C.userData.lastPosition.y = C.position.y;           /* atualiza o ultimo y de C */
-    } else {                                                /* senão a bola volta para a ultima posição conhecida */
-        C.position.x = C.userData.lastPosition.x;           /* volta a colocar o ultimo x de C */
-        C.position.y = C.userData.lastPosition.y;           /* volta a colocar o ultimo y de C */
-    }
-
-    selectBall.selected = false;                            /* retira a seleção da bola */
-    balls[selectBall.ball].material.transparent = true;     /* e volta a por a bola transparente */
-    removeCoordenates();                                    /* remove a informação das coordenadas */
-}
-
-/* Função que cria um DIV com a informação das coordenadas da bola selecionada, posição definida no .css */
-function showCoordenates() {
-    let C = balls[selectBall.ball];                 /* C = número da bola selecionada */
+    let index = i-1;
+    selectBall.selected = true;                  /* A bola é selecionada */
+    selectBall.ballNum = index;                  /* O número da bola seleccionada é guardado na variavel */
+    balls[index].material.transparent = false;   /* Para tornar a bola opaca */
+    /* Para ativar a DIV html, com as coordenadas da bola e mostrar em tempo real */
+    //showCoordenates(balls[index]);               
+    /* Função que cria um DIV com a informação das coordenadas da bola selecionada, posição definida no .css */
+    let C = balls[selectBall.ballNum];              /* C = número da bola selecionada */
+    scene.add(C);
     let coordDiv = document.createElement('div');   /* definição de coordDiv como um div */
     document.body.appendChild(coordDiv);            /* criação do nó coorDiv no body */
     /* Colocação do conteudo no div criado, caracteristicas definidas no .css, representadas as coordenadas da bola (com duas casas decimais) em tempo real e qual a bola selecionada */
-    coordDiv.innerHTML = '<span id="coord">Coordenadas de C' + selectBall.ball + ' (' + C.position.x.toFixed(2) + ',' + C.position.y.toFixed(2) + ',' + C.position.z.toFixed(2) + ')</span>';
+    coordDiv.innerHTML = 
+        '<span id="ballPosition"> Coordenadas (x,y,z) da Bola ' + (index+1)+'=> C' 
+        + selectBall.ballNum + '<br>'+' (' + C.position.x.toFixed(2) + ' , ' 
+        + C.position.y.toFixed(2) + ' , ' + C.position.z.toFixed(2) + ')</span>';
 }
 
-/* Atualiza as coordenadas da bola selecionada no ecrã (para atualizar com o movimento do rato, ou quando se pressiona w ou s) */
-function updateCoordenates() {
-    const C = balls[selectBall.ball];               /* inicializa C com a bola selecionada */
-    if (document.getElementById('coord')) {         /* Se existir o div coord insere as coordenadas no seu innerHTML com os valores arredondados a duas casas decimais, em que x,y é o ponto de interceção do rato com o tabuleiro e z a coordenada z atual da bola  */
-        document.getElementById('coord').innerHTML = 'Coordenadas de C' + selectBall.ball + ' (' + mouseIntersects.x.toFixed(2) + ',' + mouseIntersects.y.toFixed(2) + ',' + C.position.z.toFixed(2) + ')';
-    }
-}
-
-/* Remove o nó que contém a informação das coordenadas */
-function removeCoordenates() {
-    if (document.getElementById('coord')) {
-        let coordDiv = document.getElementById('coord');
+/* Função que grava as coordenadas da bola selecionada e tira a seleção de bola */
+function ballDeselected() {
+    let C = balls[selectBall.ballNum];                      /* Coloca a bola selecionada em C */
+    let newPosition = new THREE.Vector3();                  /* cria um vector2 para receber as coordenadas da interceção do rato com o tabuleiro */
+    raycaster.setFromCamera(mouse, camera);                 /* inicializa o raycaster com as posições do rato em relação à camara */
+    // const intersects = raycaster.intersectObjects(pixels);  /* coloca os objetos existentes no array pixels que são intercetados pelo ray no array intersects */
+    
+    // console.log(intersects);
+    
+    // if (intersects.length > 0) {                            /* Se existir alguma interseção coloca a bola na nova posição */
+    //     newPosition = intersects[0].point;                  /* coloca as coordenadas x,y do ponto da interseção em newXY */ 
+    //     C.position.x = newPosition.x;                       /* atualiza o novo x de C */
+    //     C.position.y = newPosition.y;                       /* atualiza o novo y de C */
+    //     /* Este parametro serve para quando se tira a seleção da bola ficarmos com a posição gravada */
+    //     C.userData.lastPosition.x = C.position.x;           /* atualiza o ultimo x de C */
+    //     C.userData.lastPosition.y = C.position.y;           /* atualiza o ultimo y de C */
+    // } else {                                                /* senão a bola volta para a ultima posição conhecida */
+    // C.position.x = C.userData.lastPosition.x;           /* volta a colocar o ultimo x de C */
+    // C.position.y = C.userData.lastPosition.y;           /* volta a colocar o ultimo y de C */
+    // }
+    
+    selectBall.selected = false;                            /* retira a seleção da bola */
+    balls[selectBall.ballNum].material.transparent = true;  /* e volta a por a bola transparente */
+    removeCoordenates();                                    /* remove a informação das coordenadas */
+    
+    /* Remove o nó que contém a informação das coordenadas */
+    if (document.getElementById('ballPosition')) {
+        let coordDiv = document.getElementById('ballPosition');
         coordDiv.parentNode.removeChild(coordDiv);
     }
 }
 
 
+/* Atualiza as coordenadas da bola selecionada no ecrã (para atualizar com o movimento do rato, ou quando se pressiona w ou s) */
+function updateCoordenates() {
+    const C = balls[selectBall.ballNum];            /* inicializa C com a bola selecionada */
+    if (document.getElementById('ballPosition')) {         /* Se existir o div coord insere as coordenadas no seu innerHTML com os valores arredondados a duas casas decimais, em que x,y é o ponto de interceção do rato com o tabuleiro e z a coordenada z atual da bola  */
+        document.getElementById('ballPosition').innerHTML =
+            'Novas coordenadas (x,y,z) da bola C' 
+            + selectBall.ballNum + '<br>'+' (' + C.position.x.toFixed(2) 
+            + ' , ' + C.position.y.toFixed(2) + ' , ' + C.position.z.toFixed(2) + ')';
+    }
+}
 
+/* Para actualizar as coordenadas da bola selecionada, aparecer e fazer desaparecer no ecran  */
+/* Função que cria um DIV com a informação das coordenadas da bola selecionada, posição definida no .css */
+// function showCoordenates() {
+    //     let C = balls[selectBall.ballNum];              /* C = número da bola selecionada */
+    //     let coordDiv = document.createElement('div');   /* definição de coordDiv como um div */
+//     document.body.appendChild(coordDiv);            /* criação do nó coorDiv no body */
+//     /* Colocação do conteudo no div criado, caracteristicas definidas no .css, representadas as coordenadas da bola (com duas casas decimais) em tempo real e qual a bola selecionada */
+//     coordDiv.innerHTML = '<span id="ballPosition">Coordenadas (x,y,z) da bola C' + selectBall.ballNum + '<br>'+' (' + C.position.x.toFixed(2) + ' , ' + C.position.y.toFixed(2) + ' , ' + C.position.z.toFixed(2) + ')</span>';
+// }
 
-
+/* Remove o nó que contém a informação das coordenadas */
+function removeCoordenates() {
+    if (document.getElementById('ballPosition')) {
+        let coordDiv = document.getElementById('ballPosition');
+        coordDiv.parentNode.removeChild(coordDiv);
+    }
+}
 
 
 /* Para que ao se selecionar um pixel, um ladrilho amarelo surga com o pressionar de tecla x */
@@ -250,6 +268,15 @@ function onMouseMove(event) {
     event.preventDefault();
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    if (selectBall.selected) {                              /* Se bola selecionada, então: */
+        
+        updateCoordenates();                                /* as coordenadas são atualizadas no ecran, consoante a posição e o movimento do rato no tabuleiro */
+
+        let C = balls[selectBall.ballNum];                  /* Para colocar na variavel C a bola selecionada */
+        raycaster.setFromCamera(mouse, camera);             /* e para que, ao se inicializar o raycaster com novas posições do rato em relação à camara, as posições */
+        C.position.x = mouse.x;                             /* da coordenada XX da bola e as do ponto de interseção */
+        C.position.y = mouse.y;                             /* com as coordenadas YY e as do ponto de interseção, sejam atualizadas */
+    }
 }
 
 
@@ -257,38 +284,40 @@ function onMouseMove(event) {
 function onDocumentKeyDown(event) {
     /* Para apagar os pontos selecionados e guardados */
     if(event.key === 'Backspace') {
-        /* Para apagar os pontos selecionados colecionados, pois já não são precisos */
         selectedPointsMP=[];
-
+        balls=[];                                               /* Para reinicializar os pontos em que as bolas aparecem */
         scene.remove.apply(scene, scene.children); 
-        createDisplayRaster(scene, camera, renderer, controls);
-        renderer.render(scene, camera);
-        controls.update();
-
-        console.log("Confirma-se que se apagou o registo de pontos.");
-    } else if (selectBall.selected == false && (keyName == '1' || keyName == '2' || keyName == '3' || keyName == '4' || keyName == '5' )) {
-        selectBall.name(keyName);
+        createDisplayRaster(scene, camera, renderer, controls); 
+        renderer.render(scene, camera);                         /* Para atualizar o tabuleiro */
+        controls.update();                                      /* Para atualizar o orbit controls */
+        console.log("Confirma-se que se apagou o registo de pontos, e se reinicializou nova posição");
+        
+    } else if (selectBall.selected == false && (event.key == '1' || event.key == '2' || event.key == '3' || event.key == '4' || event.key == '5' )) {
+        console.log("A bola",event.key,"foi selecionada."); /* Para dar visibilidade na consola do que está a decorrer como leitura do programa */
+        
+        /* Para utilizar selecionar a bola, mudar a posição da bola selecionada, ativar opacidade, utilizar o numero indicado, e apresentar coordenadas */
+        ballSelected(event.key);
 
     } else if (selectBall.selected == true) {   /* Para que, quando estiver uma das bolas seleccionadas, então: */
-        if (event.keyCode == '(space)'){        /* - Se for pressionada a tecla 'space' */
-            console.log("encontrou SPACE");
-            renderer.render(scene, camera);
-            controls.update();
+        if (event.keyCode == 32){               /* - Se for pressionada a tecla 'space' */
+            console.log("encontrou SPACE");     /* Para efeitos de experiência do utilizador */
+            renderer.render(scene, camera);     /* Para atualizar a scene em continuo */
+            controls.update();                  /* Para atualizar o orbit controls */
             ballDeselected();                   /* Libertam-se as coordenadas */
         }
-        if (keyName == 'w') {                   /* - Se for pressionada a tecla 'w', então */
-            balls[bselectBall.ball].position.z = balls[bselectBall.ball].position.z + 0.1; /*  soma-se 0.1 unidades à coordenada ZZ */
+        if (event.keyCode == 'w') {                   /* - Se for pressionada a tecla 'w', então */
+            balls[bselectBall.ballNum].position.z = balls[bselectBall.ballNum].position.z + 0.1; /*  soma-se 0.1 unidades à coordenada ZZ */
             console.log("encontrou W");
-            renderer.render(scene, camera);
-            controls.update();
-            updateCoordenates();                /* E, as coordenadas são atualizadas diretamente no monitor */
+            renderer.render(scene, camera);     /* Para atualizar a scene em continuo */
+            controls.update();                  /* Para atualizar o orbit controls */
+            updateCoordenates();                /* E, as coordenadas serem atualizadas diretamente no monitor, de forma dinâmica */
         }
-        if (keyName == 's') {                   /* - Se for pressionada a tecla 's', então */
-            balls[selectBall.ball].position.z = balls[selectBall.ball].position.z - 0.1; /*  retira-se 0.1 unidades à coordenada ZZ */
+        if (event.keyCode == 's') {                   /* - Se for pressionada a tecla 's', então */
+            balls[selectBall.ballNum].position.z = balls[selectBall.ballNum].position.z - 0.1; /*  retira-se 0.1 unidades à coordenada ZZ */
             console.log("encontrou S");
-            renderer.render(scene, camera);
-            controls.update();
-            updateCoordenates();                /* E, as coordenadas são atualizadas diretamente no monitor */
+            renderer.render(scene, camera);     /* Para atualizar a scene em continuo */
+            controls.update();                  /* Para atualizar o orbit controls */
+            updateCoordenates();                /* E, as coordenadas serem atualizadas diretamente no monitor, de forma dinâmica */
         }
     
     } else if (event.key === 'x') {

@@ -3,11 +3,11 @@ import * as THREE from 'https://unpkg.com/three@0.124.0/build/three.module.js';
 // Para que seja possivel controlar a bola selecionada tal como pedido no enunciado
 let selectBall = {
     selected: false,    // Para controlar a possibilidade de haver outra bola selecionada
-    ball: 0             // Para atribuir o número da bola que é selecionada: 0:{C0}, 1:{C1}, 2:{C2}, 3:{C3} e 4:{C4};
+    ballNum: 0             // Para atribuir o número da bola que é selecionada: 0:{C0}, 1:{C1}, 2:{C2}, 3:{C3} e 4:{C4};
 };
 
- let xRandomCoord = Math.round(Math.random()*10);
- let yRandomCoord = Math.round(Math.random()*10);
+let xRandomCoord = Math.round(Math.random()*10);
+let yRandomCoord = Math.round(Math.random()*10);
 
 console.log("aleatorio x e y: ",xRandomCoord, yRandomCoord);
 // Para representar as 5 bolas com as configurações em modo objeto

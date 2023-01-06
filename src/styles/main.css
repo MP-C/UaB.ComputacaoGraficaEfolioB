@@ -37,6 +37,21 @@ body {
   z-index: 1;
 }
 
+#ballPosition{
+  position: absolute;
+  margin-top: 70px ;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  animation-name: fadeIn;
+  color: black;
+  text-align: center;
+  font-size: 16px;
+  background-color: transparent;
+}
+
 #scene-container {
   /* Para determinar no container o espaço necessário que se ocupa na página completa */
   position: absolute;
