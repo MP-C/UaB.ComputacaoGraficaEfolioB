@@ -3,12 +3,12 @@
 // Número aluno : 2000563
 // Curso        : Licenciatura em Engenharia Informática
 // Ficheiro     : grid.js
-// Descrição    : E FOLIO A - Computação Gráfica - ficheiro com função que cria
+// Descrição    : E FOLIO B - Computação Gráfica - ficheiro com função que cria
 //                o pixel de forma individual, que é responsavel por apresentar
 //                o resultado final
 // Codigo       : Este código ficará publicamente disponivel no repositório
 //                GitHub https://github.com/MP-C/UaB.ComputacaoGraficaEfolioA
-//                após o dia 23 de Novembro de 2022
+//                após o dia 9 de Janeiro de 2023
 console.log("Check oppening file: grid.js");
 //============================================================================
 

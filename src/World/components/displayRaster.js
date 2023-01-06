@@ -31,11 +31,11 @@ let boards = [];                        /* Para criar o tabuleiro */
 
 /* Variáveis para apresentar as bolas e pontos no tabuleiro consoante a interação do utilizador */
 let balls = []; /* Para guardar as bolas selecionadas */
-let mouse = new THREE.Vector2(0, 0);     /* Para identificar a posição do rato no tabuleiro */
-let raycaster = new THREE.Raycaster();   /* Funcionalidade exigida para apresentar as coordenadas (x,y,z) em que a bola se encontra sobre o tabuleiro */
+let mouse = new THREE.Vector2(0, 0);    /* Para identificar a posição do rato no tabuleiro */
+let raycaster = new THREE.Raycaster();  /* Funcionalidade exigida para apresentar as coordenadas (x,y,z) em que a bola se encontra sobre o tabuleiro */
+let lineToBall = [];                    /* Para criar uma linha que une a bola e o tabuleiro, quando a bola se distância */
 
 //////////////////////////////////////////////////////////
-let tilePointsRed = [];                  /* Para utilizar os pontos criam os ladrilhos vermelhos do raycaster */
 let selectedPointsMP = [];               /* Para utilizar os pontos criam a linha do lineMP */
 //////////////////////////////////////////////////////////
 
@@ -177,15 +177,14 @@ function ballDeselected() {
     
     selectBall.selected = false;                            /* retira a seleção da bola */
     balls[selectBall.ballNum].material.transparent = true;  /* e volta a por a bola transparente */
-    removeCoordenates();                                    /* remove a informação das coordenadas */
-    
+    //removeCoordenates();                                    /* remove a informação das coordenadas */
+
     /* Remove o nó que contém a informação das coordenadas */
     if (document.getElementById('ballPosition')) {
         let coordDiv = document.getElementById('ballPosition');
         coordDiv.parentNode.removeChild(coordDiv);
     }
 }
-
 
 /* Atualiza as coordenadas da bola selecionada no ecrã (para atualizar com o movimento do rato, ou quando se pressiona w ou s) */
 function updateCoordenates() {
@@ -209,12 +208,12 @@ function updateCoordenates() {
 // }
 
 /* Remove o nó que contém a informação das coordenadas */
-function removeCoordenates() {
-    if (document.getElementById('ballPosition')) {
-        let coordDiv = document.getElementById('ballPosition');
-        coordDiv.parentNode.removeChild(coordDiv);
-    }
-}
+// function removeCoordenates() {
+//     if (document.getElementById('ballPosition')) {
+//         let coordDiv = document.getElementById('ballPosition');
+//         coordDiv.parentNode.removeChild(coordDiv);
+//     }
+// }
 
 
 /* Para que ao se selecionar um pixel, um ladrilho amarelo surga com o pressionar de tecla x */
@@ -239,9 +238,9 @@ function drawLine( startPoint, endPoint ) {
     selectVetor.push( new THREE.Vector3( endPoint.x * size, endPoint.y * size, 1/9 ) ); /* Para selecionar os pontos finais no vetor */
 
     /* Para criar a linha */
-    let geometry = new THREE.BufferGeometry().setFromPoints(selectVetor);
-    let material = new THREE.LineBasicMaterial( { color: 'black' } ); /* Para determinar a cor da linha */
-    let selectedLine = new THREE.Line( geometry, material );
+    let geometry = new THREE.BufferGeometry().setFromPoints(selectVetor); /* Para determinar a construção de uma linha */
+    let material = new THREE.LineBasicMaterial( { color: 'limegreen' } ); /* Para determinar a cor da linha */
+    let selectedLine = new THREE.Line( geometry, material );              /* Para construir a linha */
 
     /* Para adicionar a linha à scene */
     scene.add( selectedLine );
@@ -294,36 +293,33 @@ function onDocumentKeyDown(event) {
         
     } else if (selectBall.selected == false && (event.key == '1' || event.key == '2' || event.key == '3' || event.key == '4' || event.key == '5' )) {
         console.log("A bola",event.key,"foi selecionada."); /* Para dar visibilidade na consola do que está a decorrer como leitura do programa */
-        
         /* Para utilizar selecionar a bola, mudar a posição da bola selecionada, ativar opacidade, utilizar o numero indicado, e apresentar coordenadas */
         ballSelected(event.key);
 
     } else if (selectBall.selected == true) {   /* Para que, quando estiver uma das bolas seleccionadas, então: */
-        if (event.keyCode == 32){               /* - Se for pressionada a tecla 'space' */
-            console.log("encontrou SPACE");     /* Para efeitos de experiência do utilizador */
+        if (event.keyCode == 32 ){               /* - Se for pressionada a tecla 'space' */
+            console.log("Space pressionado");     /* Para efeitos de experiência do utilizador */
             renderer.render(scene, camera);     /* Para atualizar a scene em continuo */
             controls.update();                  /* Para atualizar o orbit controls */
             ballDeselected();                   /* Libertam-se as coordenadas */
         }
-        if (event.keyCode == 'w') {                   /* - Se for pressionada a tecla 'w', então */
-            balls[bselectBall.ballNum].position.z = balls[bselectBall.ballNum].position.z + 0.1; /*  soma-se 0.1 unidades à coordenada ZZ */
-            console.log("encontrou W");
+        if (event.key == 'w') {                   /* - Se for pressionada a tecla 'w', então */
+            balls[selectBall.ballNum].position.z = balls[selectBall.ballNum].position.z + 0.1; /*  soma-se 0.1 unidades à coordenada ZZ */
+            console.log("W pressionado, a bola sobe");
             renderer.render(scene, camera);     /* Para atualizar a scene em continuo */
             controls.update();                  /* Para atualizar o orbit controls */
             updateCoordenates();                /* E, as coordenadas serem atualizadas diretamente no monitor, de forma dinâmica */
         }
-        if (event.keyCode == 's') {                   /* - Se for pressionada a tecla 's', então */
+        if (event.key == 's') {                   /* - Se for pressionada a tecla 's', então */
             balls[selectBall.ballNum].position.z = balls[selectBall.ballNum].position.z - 0.1; /*  retira-se 0.1 unidades à coordenada ZZ */
-            console.log("encontrou S");
+            console.log("S pressionado, a bola desce");
             renderer.render(scene, camera);     /* Para atualizar a scene em continuo */
             controls.update();                  /* Para atualizar o orbit controls */
             updateCoordenates();                /* E, as coordenadas serem atualizadas diretamente no monitor, de forma dinâmica */
         }
     
     } else if (event.key === 'x') {
-
         let redTile = new THREE.Color('red');
-        
         /* Para guardar a posição de interseção do ponteiro do rato e o tabuleiro */
         raycaster.setFromCamera(mouse, camera); 
 
@@ -341,11 +337,12 @@ function onDocumentKeyDown(event) {
 
             let x = selection[0].object.position.x ; /* E impõem-se uma nova posição */
             let y = selection[0].object.position.y ;
-            tilePointsRed.push({x : x, y : y});
+            let z = selection[0].object.position.z ;
+            lineToBall.push({x : x, y : y, z : balls[selectBall.ballNum].position.z});
 
-            if (tilePointsRed.length > 1) {
-                let startPoint = tilePointsRed[0]; /* A variável startPoint igual ao ponto de início de cordenadas do ladrilho vermelho */
-                let endPoint = tilePointsRed[1]; /* A variável endPoint igual ao ponto de final de cordenadas do ladrilho vermelho*/
+            if (lineToBall.length > 1) {
+                let startPoint = lineToBall[0]; /* A variável startPoint igual ao ponto de início de cordenadas do ladrilho vermelho */
+                let endPoint = lineToBall[1]; /* A variável endPoint igual ao ponto de final de cordenadas do ladrilho vermelho*/
                 console.log("ponto Inicio ladrilho selecionado: ", startPoint, " e ponto Final ladrilho selecionado: ", endPoint);
 
                 /* Para desenhar a linha */
@@ -360,7 +357,7 @@ function onDocumentKeyDown(event) {
                 controls.update();
 
                 /* Para apagar os pontos vermelhos colecionados, pois não são mais necessários, dado que já foram expostos em Scene */
-                tilePointsRed = [];
+                lineToBall = [];
             }
         }
     }

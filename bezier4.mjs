@@ -4,6 +4,7 @@
 // Curso        : Licenciatura em Engenharia Informática
 // Ficheiro     : bezier4.mjs
 // Descrição    : E FOLIO B - Computação Gráfica - para calcular a curva
+//                segundo a função dada no enunciado para Bézier quártica
 // Codigo       : Este código ficará publicamente disponivel no repositório
 //                GitHub https://github.com/MP-C/UaB.ComputacaoGraficaEfolioB
 //                após o dia 9 de Janeiro de 2023
