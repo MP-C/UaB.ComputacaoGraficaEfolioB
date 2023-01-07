@@ -15,9 +15,8 @@ import * as THREE from 'https://unpkg.com/three@0.124.0/build/three.module.js';
 
 /* Implementação do algoritmo de Bezier4 */
 function bezier4({c0,c1,c2,c3,c4,t}){              // Para respeitar o formato : {c0:Vector3, c1: Vector3, c2:Vector3, c3:Vector3, c4:Vector3, t:float}
-    console.log("bezier4");
+    
     let output = new THREE.Vector3();
-
     output.x=calcPoli(c0.x,c1.x,c2.x,c3.x,c4.x,t); // Para preencher a coordenada x da curva no instante t
     output.y=calcPoli(c0.y,c1.y,c2.y,c3.y,c4.y,t); // Para preencher a coordenada y da curva no instante t
     output.z=calcPoli(c0.z,c1.z,c2.z,c3.z,c4.z,t); // Para preencher a coordenada z da curva no instante t

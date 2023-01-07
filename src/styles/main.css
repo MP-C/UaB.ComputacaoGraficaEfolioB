@@ -35,10 +35,11 @@ body {
   position: absolute;
   width: 100%;
   z-index: 1;
+  background-color: grey;
 }
 
 #ballPosition{
-  position: absolute;
+  position: fixed;
   margin-top: 70px ;
   width: 100%;
   display: flex;
@@ -55,7 +56,6 @@ body {
 #scene-container {
   /* Para determinar no container o espaço necessário que se ocupa na página completa */
   position: absolute;
-  margin-top: 50px ;
   width: 100%;
   height: 100%;
 

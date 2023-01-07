@@ -76,8 +76,8 @@ function createAxis() {
 /* Para criar o tabuleiro a partir de cada pixel, defenindo a dimensão do tabuleiro, do pixel, a posição nos eixos e com isso, a sua cor */
 function createBoard() {
     let board;
-    for ( let horizontal = -gridSize-1; horizontal <= gridSize; horizontal++ ) {      /* Para determinar o tamanho do tabuleiro para x, com 10 pixels para esquerda e 10 pixels para direita */
-        for ( let vertical = -gridSize-1; vertical <= gridSize; vertical++ ) {        /* Para determinar o tamanho do tabuleiro para Y, com 10 pixels para baixo e 10 pixels para cima */
+    for ( let horizontal = -gridSize - 1; horizontal <= gridSize; horizontal++ ) {      /* Para determinar o tamanho do tabuleiro para x, com 10 pixels para esquerda e 10 pixels para direita */
+        for ( let vertical = -gridSize - 1; vertical <= gridSize; vertical++ ) {        /* Para determinar o tamanho do tabuleiro para Y, com 10 pixels para baixo e 10 pixels para cima */
             if ( ( horizontal % 2 === 0 && vertical % 2 === 0 ) || ( horizontal % 2 !== 0 && vertical % 2 !== 0  ) ) { 
                 /* Para garantir para ambos os pixel's, que quando o resultado for par ou impare, este admite uma cor específica */
                 board = createPixel(size, horizontal, vertical, colorEven);         /* Adicionar com uma cor especifica quando é par */
@@ -161,7 +161,7 @@ function ballDeselected() {
     
     selectBall.selected = false;                            /* retira a seleção da bola */
     balls[selectBall.ballNum].material.transparent = true;  /* e volta a por a bola transparente */
-    document.getElementById('ballPosition').innerHTML = '';                                /* remove a informação das coordenadas */
+    document.getElementById('ballPosition').innerHTML = ''; /* remove a informação das coordenadas */
 
     if (balls[selectBall.ballNum].position.z !== 0) {
         let zLine = [];
@@ -185,8 +185,8 @@ function ballDeselected() {
 
 /* Atualiza as coordenadas da bola selecionada no ecrã (para atualizar com o movimento do rato, ou quando se pressiona w ou s) */
 function updateCoordenates() {
-    const C = balls[selectBall.ballNum];            /* inicializa C com a bola selecionada */
-    if (document.getElementById('ballPosition')) {         /* Se existir o div coord insere as coordenadas no seu innerHTML com os valores arredondados a duas casas decimais, em que x,y é o ponto de interceção do rato com o tabuleiro e z a coordenada z atual da bola  */
+    const C = balls[selectBall.ballNum];                    /* inicializa C com a bola selecionada */
+    if (document.getElementById('ballPosition')) {          /* Se existir o div coord insere as coordenadas no seu innerHTML com os valores arredondados a duas casas decimais, em que x,y é o ponto de interceção do rato com o tabuleiro e z a coordenada z atual da bola  */
         document.getElementById('ballPosition').innerHTML =
             'Novas coordenadas (x,y,z) da bola C' 
             + selectBall.ballNum + '<br>'+' (' + C.position.x.toFixed(2) 
@@ -194,21 +194,19 @@ function updateCoordenates() {
     }
 }
 
-/* Para desenhar a linha no tabuleiro */
-function drawLine( startPoint, endPoint ) {
-    let selectVetor=[];
+/* Para desenhar a a curve Bezier no tabuleiro segundo a posição das bolas */
+function createBezierCurve() {
+    let bezier4Curve = new Bezier4Curve(1, balls);
+        let geometry = new THREE.TubeGeometry( bezier4Curve, 80, 0.35, 30, false);
+        let material = new THREE.MeshBasicMaterial( { color: new THREE.Color('#32CD32'), wireframe : true} );
 
-    selectVetor.push( new THREE.Vector3( startPoint.x * size, startPoint.y * size, 1/9 ) ); /* Para selecionar os pontos iniciais no vetor*/
-    selectVetor.push( new THREE.Vector3( endPoint.x * size, endPoint.y * size, 1/9 ) ); /* Para selecionar os pontos finais no vetor */
-
-    /* Para criar a linha */
-    let geometry = new THREE.BufferGeometry().setFromPoints(selectVetor); /* Para determinar a construção de uma linha */
-    let material = new THREE.LineBasicMaterial( { color: 'limegreen' } ); /* Para determinar a cor da linha */
-    let selectedLine = new THREE.Line( geometry, material );              /* Para construir a linha */
-
-    /* Para adicionar a linha à scene */
-    scene.add( selectedLine );
-    selectedPointsMP = selectVetor;
+        let bezier4Tube = new THREE.Mesh(geometry, material);
+        bezier4Tube.receiveShadow = true;                    
+        bezier4Tube.castShadow = true;        
+        
+        scene.add(bezier4Tube);
+        renderer.render(scene, camera);     /* Para atualizar a scene em continuo */
+        controls.update();                  /* Para atualizar o orbit controls */
 }
 
 /*======================EVENTS======================*/
@@ -290,18 +288,8 @@ function onDocumentKeyDown(event) {
             controls.update();                  /* Para atualizar o orbit controls */
         }
     
-    } else if (event.key === 'x') {
-        let bezier4Curve = new Bezier4Curve(1, balls);
-        let geometry = new THREE.TubeGeometry( bezier4Curve, 80, 0.35, 30, false);
-        let material = new THREE.MeshBasicMaterial( { color: new THREE.Color('#af910a'), wireframe : true} );
-
-        let bezier4Tube = new THREE.Mesh(geometry, material);
-        bezier4Tube.receiveShadow = true;                    
-        bezier4Tube.castShadow = true;        
-        
-        scene.add(bezier4Tube);
-        renderer.render(scene, camera);     /* Para atualizar a scene em continuo */
-        controls.update();                  /* Para atualizar o orbit controls */
+    } else if (event.key === 'x') {             /* Para que quando se clicar na tecla "x" */
+        createBezierCurve();                    /* se faça aparecer no tabuleiro a curva Bezier */
     }
 }
 

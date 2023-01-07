@@ -24,27 +24,27 @@ let yRandomCoord = Math.round(Math.random()*10);
 
 console.log("Pontos gerados aleatóriamente para x",xRandomCoord, "e y:",yRandomCoord);
 /* Para representar as 5 bolas com as configurações em modo objeto */
-let C0 = {
+let C0 = {      /* Constiuir as condições para a bola amarela */
     color: "yellow",
     position: new THREE.Vector3(0, 0, 0)
 };
 
-let C1 = {
+let C1 = {      /* Constiuir as condições para a bola laranja */
     color: "orange",
     position: new THREE.Vector3((xRandomCoord==0?2:xRandomCoord), 0, 0)
 };
 
-let C2 = {
+let C2 = {      /* Constiuir as condições para a bola vermelha */
     color: "red",
     position: new THREE.Vector3(xRandomCoord-yRandomCoord, -yRandomCoord+1, 0)
 };
 
-let C3 = {
+let C3 = {      /* Constiuir as condições para a bola verde */
     color: "green",
     position: new THREE.Vector3(-(xRandomCoord==0?2:-xRandomCoord), -(yRandomCoord==0?2:yRandomCoord), 0)
 }
 
-let C4 = {
+let C4 = {      /* Constiuir as condições para a bola azul */
     color: "blue",
     position: new THREE.Vector3(-xRandomCoord+yRandomCoord, yRandomCoord-1, 0)
 };

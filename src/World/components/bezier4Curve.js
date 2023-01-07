@@ -1,3 +1,16 @@
+//============================================================================
+// Nome         : Mário Pedro Carvalho
+// Número aluno : 2000563
+// Curso        : Licenciatura em Engenharia Informática
+// Ficheiro     : bezier4Curve.js
+// Descrição    : E FOLIO B - Computação Gráfica - para calcular a curva
+//                segundo a função dada no enunciado para Bézier quártica
+// Codigo       : Este código ficará publicamente disponivel no repositório
+//                GitHub https://github.com/MP-C/UaB.ComputacaoGraficaEfolioB
+//                após o dia 9 de Janeiro de 2023
+console.log("Check oppening file: bezier4Curve.js");
+//============================================================================
+
 import { bezier4 } from '../../../bezier4.mjs'
 import * as THREE from 'https://unpkg.com/three@0.124.0/build/three.module.js';
 
