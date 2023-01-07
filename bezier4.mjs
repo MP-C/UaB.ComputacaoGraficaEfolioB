@@ -37,7 +37,7 @@ function calcC1 (c1,t){
 
 // Função para calcular coordenada de C2: (6*(1-t)^2)*(t^2)*(componente (x,y,z) de c2) 
 function calcC2 (c2,t){
-    return 6*Math.pow((1-t),2)*(t^2)*c2;
+    return 6*Math.pow((1-t),2)*Math.pow(t,2)*c2;
 }
 
 // Função para calcular coordenada de C3: (4*(1-t)*(t^3)*(componente (x,y,z) de c3) 

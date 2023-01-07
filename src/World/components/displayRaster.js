@@ -15,9 +15,7 @@ console.log("Check oppening file: displayRastrer.js");
 import * as THREE from 'https://unpkg.com/three@0.124.0/build/three.module.js';
 import { createPixel } from './pixel.js';
 import { selectBall, C0, C1, C2, C3, C4 } from './balls.js';
-
-import { bezier4 } from './../../../bezier4.mjs';
-import { lineMP } from './../../../lineMP.mjs';
+import { Bezier4Curve } from './bezier4Curve.js'
 
 /* Variável para pixel */
 const size = 1; /* Defenir o tamanho do pixel, idêntico ao ladrilho em cima (quando selecionado) */
@@ -34,10 +32,6 @@ let balls = []; /* Para guardar as bolas selecionadas */
 let mouse = new THREE.Vector2(0, 0);    /* Para identificar a posição do rato no tabuleiro */
 let raycaster = new THREE.Raycaster();  /* Funcionalidade exigida para apresentar as coordenadas (x,y,z) em que a bola se encontra sobre o tabuleiro */
 let lineToBall = [];                    /* Para criar uma linha que une a bola e o tabuleiro, quando a bola se distância */
-
-//////////////////////////////////////////////////////////
-let selectedPointsMP = [];               /* Para utilizar os pontos criam a linha do lineMP */
-//////////////////////////////////////////////////////////
 
 /* Funções que permitem integrar na scene todos os materiais */
 /* Para impor os eixos xx, yy e zz, no tabuleiro, com as cores */
@@ -140,11 +134,16 @@ function ballSelected(i) {
     selectBall.selected = true;                  /* A bola é selecionada */
     selectBall.ballNum = index;                  /* O número da bola seleccionada é guardado na variavel */
     balls[index].material.transparent = false;   /* Para tornar a bola opaca */
-    /* Para ativar a DIV html, com as coordenadas da bola e mostrar em tempo real */
-    //showCoordenates(balls[index]);               
+    
     /* Função que cria um DIV com a informação das coordenadas da bola selecionada, posição definida no .css */
-    let C = balls[selectBall.ballNum];              /* C = número da bola selecionada */
+    let C = balls[selectBall.ballNum];           /* C = número da bola selecionada */
     scene.add(C);
+    
+    /* Para ativar a DIV html, com as coordenadas da bola e mostrar em tempo real */
+    if (C.line !== undefined) {
+        scene.remove(C.line);
+        C.line == undefined;
+    }
     let coordDiv = document.createElement('div');   /* definição de coordDiv como um div */
     document.body.appendChild(coordDiv);            /* criação do nó coorDiv no body */
     /* Colocação do conteudo no div criado, caracteristicas definidas no .css, representadas as coordenadas da bola (com duas casas decimais) em tempo real e qual a bola selecionada */
@@ -159,25 +158,23 @@ function ballDeselected() {
     let C = balls[selectBall.ballNum];                      /* Coloca a bola selecionada em C */
     let newPosition = new THREE.Vector3();                  /* cria um vector2 para receber as coordenadas da interceção do rato com o tabuleiro */
     raycaster.setFromCamera(mouse, camera);                 /* inicializa o raycaster com as posições do rato em relação à camara */
-    // const intersects = raycaster.intersectObjects(pixels);  /* coloca os objetos existentes no array pixels que são intercetados pelo ray no array intersects */
-    
-    // console.log(intersects);
-    
-    // if (intersects.length > 0) {                            /* Se existir alguma interseção coloca a bola na nova posição */
-    //     newPosition = intersects[0].point;                  /* coloca as coordenadas x,y do ponto da interseção em newXY */ 
-    //     C.position.x = newPosition.x;                       /* atualiza o novo x de C */
-    //     C.position.y = newPosition.y;                       /* atualiza o novo y de C */
-    //     /* Este parametro serve para quando se tira a seleção da bola ficarmos com a posição gravada */
-    //     C.userData.lastPosition.x = C.position.x;           /* atualiza o ultimo x de C */
-    //     C.userData.lastPosition.y = C.position.y;           /* atualiza o ultimo y de C */
-    // } else {                                                /* senão a bola volta para a ultima posição conhecida */
-    // C.position.x = C.userData.lastPosition.x;           /* volta a colocar o ultimo x de C */
-    // C.position.y = C.userData.lastPosition.y;           /* volta a colocar o ultimo y de C */
-    // }
     
     selectBall.selected = false;                            /* retira a seleção da bola */
     balls[selectBall.ballNum].material.transparent = true;  /* e volta a por a bola transparente */
-    //removeCoordenates();                                    /* remove a informação das coordenadas */
+    document.getElementById('ballPosition').innerHTML = '';                                /* remove a informação das coordenadas */
+
+    if (balls[selectBall.ballNum].position.z !== 0) {
+        let zLine = [];
+        zLine.push(new THREE.Vector3(balls[selectBall.ballNum].position.x, balls[selectBall.ballNum].position.y, 0));
+        zLine.push(balls[selectBall.ballNum].position);
+    
+        /* Para criar a linha na scene */
+        let geometry3 = new THREE.BufferGeometry().setFromPoints(zLine);
+        let material3 = new THREE.LineBasicMaterial( { color: new THREE.Color('white') } );
+        let line3 = new THREE.Line(geometry3, material3);
+        scene.add(line3);    
+        balls[selectBall.ballNum].line = line3;
+    }
 
     /* Remove o nó que contém a informação das coordenadas */
     if (document.getElementById('ballPosition')) {
@@ -195,39 +192,6 @@ function updateCoordenates() {
             + selectBall.ballNum + '<br>'+' (' + C.position.x.toFixed(2) 
             + ' , ' + C.position.y.toFixed(2) + ' , ' + C.position.z.toFixed(2) + ')';
     }
-}
-
-/* Para actualizar as coordenadas da bola selecionada, aparecer e fazer desaparecer no ecran  */
-/* Função que cria um DIV com a informação das coordenadas da bola selecionada, posição definida no .css */
-// function showCoordenates() {
-    //     let C = balls[selectBall.ballNum];              /* C = número da bola selecionada */
-    //     let coordDiv = document.createElement('div');   /* definição de coordDiv como um div */
-//     document.body.appendChild(coordDiv);            /* criação do nó coorDiv no body */
-//     /* Colocação do conteudo no div criado, caracteristicas definidas no .css, representadas as coordenadas da bola (com duas casas decimais) em tempo real e qual a bola selecionada */
-//     coordDiv.innerHTML = '<span id="ballPosition">Coordenadas (x,y,z) da bola C' + selectBall.ballNum + '<br>'+' (' + C.position.x.toFixed(2) + ' , ' + C.position.y.toFixed(2) + ' , ' + C.position.z.toFixed(2) + ')</span>';
-// }
-
-/* Remove o nó que contém a informação das coordenadas */
-// function removeCoordenates() {
-//     if (document.getElementById('ballPosition')) {
-//         let coordDiv = document.getElementById('ballPosition');
-//         coordDiv.parentNode.removeChild(coordDiv);
-//     }
-// }
-
-
-/* Para que ao se selecionar um pixel, um ladrilho amarelo surga com o pressionar de tecla x */
-function createTile(x, y) {
-    let geometry = new THREE.BoxGeometry(size, size, size);
-    /* Condição expressa no enunciado quanto à criação do ladrinho para o tamanho, cor e transparência */
-    let material = new THREE.MeshBasicMaterial({color: new THREE.Color('yellow'), opacity : 0.5, transparent : true});
-    let tile = new THREE.Mesh(geometry, material);
-    
-    /* Para que a sua posição seja calculada segundo a dimensão do pixel que se encontra na mesma posição 2D, mas ganhar profundidade do ladrilho */
-    tile.position.x = size * x;
-    tile.position.y = size * y;
-    tile.position.z = size / 4; /* Condição da altura pedida que o ladrilho deva ter altura = 1/4 */
-    return tile;
 }
 
 /* Para desenhar a linha no tabuleiro */
@@ -268,13 +232,22 @@ function onMouseMove(event) {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     if (selectBall.selected) {                              /* Se bola selecionada, então: */
-        
         updateCoordenates();                                /* as coordenadas são atualizadas no ecran, consoante a posição e o movimento do rato no tabuleiro */
 
-        let C = balls[selectBall.ballNum];                  /* Para colocar na variavel C a bola selecionada */
+        /* Para colocar na variavel C a bola selecionada */
         raycaster.setFromCamera(mouse, camera);             /* e para que, ao se inicializar o raycaster com novas posições do rato em relação à camara, as posições */
-        C.position.x = mouse.x;                             /* da coordenada XX da bola e as do ponto de interseção */
-        C.position.y = mouse.y;                             /* com as coordenadas YY e as do ponto de interseção, sejam atualizadas */
+
+        let intersects = raycaster.intersectObjects(boards);
+        if (intersects.length) {
+            let coordinates = intersects[0].point;
+            
+            let C = balls[selectBall.ballNum];      
+            C.position.x = coordinates.x;                   /* da coordenada XX da bola e as do ponto de interseção */
+            C.position.y = coordinates.y;                   /* com as coordenadas YY e as do ponto de interseção, sejam atualizadas */
+
+            renderer.render(scene, camera);                 /* Para atualizar o tabuleiro */
+            controls.update();                              /* Para atualizar o orbit controls */
+        }
     }
 }
 
@@ -283,7 +256,6 @@ function onMouseMove(event) {
 function onDocumentKeyDown(event) {
     /* Para apagar os pontos selecionados e guardados */
     if(event.key === 'Backspace') {
-        selectedPointsMP=[];
         balls=[];                                               /* Para reinicializar os pontos em que as bolas aparecem */
         scene.remove.apply(scene, scene.children); 
         createDisplayRaster(scene, camera, renderer, controls); 
@@ -297,69 +269,39 @@ function onDocumentKeyDown(event) {
         ballSelected(event.key);
 
     } else if (selectBall.selected == true) {   /* Para que, quando estiver uma das bolas seleccionadas, então: */
-        if (event.keyCode == 32 ){               /* - Se for pressionada a tecla 'space' */
-            console.log("Space pressionado");     /* Para efeitos de experiência do utilizador */
+        if (event.code == 'Space') {            /* - Se for pressionada a tecla 'space' */
+            console.log("Space pressionado");   /* Para efeitos de experiência do utilizador */
+            ballDeselected();                   /* Libertam-se as coordenadas */
             renderer.render(scene, camera);     /* Para atualizar a scene em continuo */
             controls.update();                  /* Para atualizar o orbit controls */
-            ballDeselected();                   /* Libertam-se as coordenadas */
         }
-        if (event.key == 'w') {                   /* - Se for pressionada a tecla 'w', então */
+        if (event.key == 'w') {                 /* - Se for pressionada a tecla 'w', então */
             balls[selectBall.ballNum].position.z = balls[selectBall.ballNum].position.z + 0.1; /*  soma-se 0.1 unidades à coordenada ZZ */
             console.log("W pressionado, a bola sobe");
+            updateCoordenates();                /* E, as coordenadas serem atualizadas diretamente no monitor, de forma dinâmica */
             renderer.render(scene, camera);     /* Para atualizar a scene em continuo */
             controls.update();                  /* Para atualizar o orbit controls */
-            updateCoordenates();                /* E, as coordenadas serem atualizadas diretamente no monitor, de forma dinâmica */
         }
-        if (event.key == 's') {                   /* - Se for pressionada a tecla 's', então */
+        if (event.key == 's') {                 /* - Se for pressionada a tecla 's', então */
             balls[selectBall.ballNum].position.z = balls[selectBall.ballNum].position.z - 0.1; /*  retira-se 0.1 unidades à coordenada ZZ */
             console.log("S pressionado, a bola desce");
+            updateCoordenates();                /* E, as coordenadas serem atualizadas diretamente no monitor, de forma dinâmica */
             renderer.render(scene, camera);     /* Para atualizar a scene em continuo */
             controls.update();                  /* Para atualizar o orbit controls */
-            updateCoordenates();                /* E, as coordenadas serem atualizadas diretamente no monitor, de forma dinâmica */
         }
     
     } else if (event.key === 'x') {
-        let redTile = new THREE.Color('red');
-        /* Para guardar a posição de interseção do ponteiro do rato e o tabuleiro */
-        raycaster.setFromCamera(mouse, camera); 
+        let bezier4Curve = new Bezier4Curve(1, balls);
+        let geometry = new THREE.TubeGeometry( bezier4Curve, 80, 0.35, 30, false);
+        let material = new THREE.MeshBasicMaterial( { color: new THREE.Color('#af910a'), wireframe : true} );
 
-        /* Para cruzar os pontos entre o ponteiro do rato e o tabuleiro, quando selecionada a tecla "x" */
-        let selection = raycaster.intersectObjects(boards);
+        let bezier4Tube = new THREE.Mesh(geometry, material);
+        bezier4Tube.receiveShadow = true;                    
+        bezier4Tube.castShadow = true;        
         
-        if (selection.length > 0) {
-            let selectionColor = selection[0].object.material.color; /* Para selecionar a cor atual e verificar de seguida se o pixel clicado é vermelho */
-            
-            if( selectionColor!=('red')){ /* Caso o pixel não tenha cor vermelha, então muda de cor */
-                selection[0].object.material.color.set(redTile);
-                renderer.render(scene, camera);   
-                controls.update();
-            }
-
-            let x = selection[0].object.position.x ; /* E impõem-se uma nova posição */
-            let y = selection[0].object.position.y ;
-            let z = selection[0].object.position.z ;
-            lineToBall.push({x : x, y : y, z : balls[selectBall.ballNum].position.z});
-
-            if (lineToBall.length > 1) {
-                let startPoint = lineToBall[0]; /* A variável startPoint igual ao ponto de início de cordenadas do ladrilho vermelho */
-                let endPoint = lineToBall[1]; /* A variável endPoint igual ao ponto de final de cordenadas do ladrilho vermelho*/
-                console.log("ponto Inicio ladrilho selecionado: ", startPoint, " e ponto Final ladrilho selecionado: ", endPoint);
-
-                /* Para desenhar a linha */
-                drawLine(startPoint, endPoint);
-                renderer.render(scene, camera);
-                controls.update();
-
-                /* Para desenhar os ladrilhos coloridos*/
-                let tiles = lineMP(startPoint, endPoint);
-                tiles.every(tile => scene.add(createTile(tile.x, tile.y)));
-            renderer.render(scene, camera);
-                controls.update();
-
-                /* Para apagar os pontos vermelhos colecionados, pois não são mais necessários, dado que já foram expostos em Scene */
-                lineToBall = [];
-            }
-        }
+        scene.add(bezier4Tube);
+        renderer.render(scene, camera);     /* Para atualizar a scene em continuo */
+        controls.update();                  /* Para atualizar o orbit controls */
     }
 }
 

@@ -23,40 +23,30 @@ let xRandomCoord = Math.round(Math.random()*10);
 let yRandomCoord = Math.round(Math.random()*10);
 
 console.log("Pontos gerados aleatóriamente para x",xRandomCoord, "e y:",yRandomCoord);
-// Para representar as 5 bolas com as configurações em modo objeto
+/* Para representar as 5 bolas com as configurações em modo objeto */
 let C0 = {
     color: "yellow",
-    name:1,
-    position: new THREE.Vector3(0, 0, 0),
-    startPosition: new THREE.Vector3(-7, 0, 0)
+    position: new THREE.Vector3(0, 0, 0)
 };
 
 let C1 = {
     color: "orange",
-    name:2,
-    position: new THREE.Vector3((xRandomCoord==0?2:xRandomCoord), 0, 0),
-    startPosition: new THREE.Vector3(-3, -3, 0)
+    position: new THREE.Vector3((xRandomCoord==0?2:xRandomCoord), 0, 0)
 };
 
 let C2 = {
     color: "red",
-    name:3,
-    position: new THREE.Vector3(xRandomCoord-yRandomCoord, -yRandomCoord+1, 0),
-    startPosition: new THREE.Vector3(0, -5, 0)
+    position: new THREE.Vector3(xRandomCoord-yRandomCoord, -yRandomCoord+1, 0)
 };
 
 let C3 = {
     color: "green",
-    name:4,
-    position: new THREE.Vector3(-(xRandomCoord==0?2:-xRandomCoord), -(yRandomCoord==0?2:yRandomCoord), 0),
-    startPosition: new THREE.Vector3(3, -3, 0)
+    position: new THREE.Vector3(-(xRandomCoord==0?2:-xRandomCoord), -(yRandomCoord==0?2:yRandomCoord), 0)
 }
 
 let C4 = {
     color: "blue",
-    name:5,
-    position: new THREE.Vector3(-xRandomCoord+yRandomCoord, yRandomCoord-1, 0),
-    startPosition: new THREE.Vector3(7, 0, 0)
+    position: new THREE.Vector3(-xRandomCoord+yRandomCoord, yRandomCoord-1, 0)
 };
 
 export { selectBall, C0, C1, C2, C3, C4 };
