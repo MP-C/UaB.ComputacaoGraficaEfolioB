@@ -31,7 +31,7 @@ let C0 = {      /* Constiuir as condições para a bola amarela */
 
 let C1 = {      /* Constiuir as condições para a bola laranja */
     color: "orange",
-    position: new THREE.Vector3((xRandomCoord==0?2:xRandomCoord), 0, 0)
+    position: new THREE.Vector3((yRandomCoord==0?2:yRandomCoord), (xRandomCoord==0?2:xRandomCoord), 0)
 };
 
 let C2 = {      /* Constiuir as condições para a bola vermelha */
